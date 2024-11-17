@@ -12,7 +12,7 @@
 
     <div class="text-center">
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
-            Add Products
+            Add Product
         </button>
     </div>
     
