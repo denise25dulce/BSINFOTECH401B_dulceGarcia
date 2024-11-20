@@ -15,4 +15,10 @@ class Products extends Model
         'quantity',
         'image'
     ];
+
+    public function getImageUrlAttribute()
+{
+    return $this->image ? asset('storage/' . $this->image) : null;
+}
+
 }

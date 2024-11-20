@@ -43,10 +43,13 @@
                                     <td>{{$products->description}}</td>
                                     <td>{{$products->price}}</td>
                                     <td>{{$products->quantity}}</td>
-                                    <td>{{$products->image}}</td>
                                     <td>
-                                        <a href="{{route('product.edit', $products->id)}}" class="btn btn-success">Edit</a>
-                                        <a href="{{route('product.show', $products->id)}}" class="btn btn-info">Show</a>
+                                        <img src="{{ asset('storage/' . $products->image) }}" alt="Product Image" class="img-thumbnail" style="width: 100px; height: auto;">
+                                    </td>
+                                    
+                                    <td>
+                                        <a href="{{route('product.edit', $products->id)}}" class="btn btn-info">Edit</a>
+                                        <a href="{{route('product.show', $products->id)}}" class="btn btn-info">View</a>
                                            
                                     </td>
                                     

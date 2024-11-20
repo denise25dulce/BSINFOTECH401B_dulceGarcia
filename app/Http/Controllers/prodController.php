@@ -34,7 +34,7 @@ class prodController extends Controller
             'description' => 'required|string|max:255',
             'price'=> 'required|integer|min:1',
             'quantity'=> 'required|integer|min:1',
-            'image' => 'nullable|mimes:png,jpeg,webp,jpg,gif|max:2048'
+            'image' => 'required|mimes:png,jpeg,webp,jpg,gif|max:2048'
         ]);
         
         $imagePath = null;
@@ -81,7 +81,17 @@ class prodController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validate = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'price'=> 'required|integer|min:1',
+            'quantity'=> 'required|integer|min:1',
+            'image' => 'required|mimes:png,jpeg,webp,jpg,gif|max:2048'
+        ]);
+
+        $product = Products::findOrFail($id);
+        $product->update($validate);    
+        return redirect()->route('product.index')->with('success','Product Update Successfully!');
     }
 
     /**
