@@ -12,8 +12,8 @@ class prodController extends Controller
      */
     public function index()
     {
-        $product = Products::all();
-        return view("product.index");
+        $product = Products::paginate(10); // Fetch all products
+        return view('product.index', compact('product'));
     }
 
     /**
@@ -33,9 +33,28 @@ class prodController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'price'=> 'required|integer|min:1',
-            'quantity'=> 'required|integer|min:1'
+            'quantity'=> 'required|integer|min:1',
+            'image' => 'nullable|mimes:png,jpeg,webp,jpg,gif|max:2048'
         ]);
-        Products::create($validate);
+        
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->storeAs(
+                'products',
+                time().'.'.$request->file('image')->getClientOriginalExtension(),
+                'public'
+                
+            );
+        }
+
+        Products::create([
+            'name' => $validate['name'],
+            'description' => $validate['description'],
+            'price' => $validate['price'],
+            'quantity'=> $validate['quantity'],
+            'image'=> $imagePath
+        ]);
+
         return redirect()->route('product.index')->with('success','Product Added Successfully!');
     }
 
@@ -43,8 +62,9 @@ class prodController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
+    {   
+        $product = Products::findOrFail($id);
+        return view('product.show', compact('product'));
     }
 
     /**
@@ -52,7 +72,8 @@ class prodController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $product = Products::findOrFail($id); 
+        return view('product.edit', compact('product')); 
     }
 
     /**

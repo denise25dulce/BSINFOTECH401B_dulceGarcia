@@ -9,22 +9,22 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Products CRUD</h1>
     
+
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="text-center card-header">
                 <h5>Add Product</h5>
             </div>
             <div class="card-body">
-                <form action="{{route('product.store')}}" method="POST">
-                    @csrf
+                <form action="{{route('product.store')}}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="_token" value="{{csrf_token()}}">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">Product Name</label>
                         <input type="text" name="name" class="form-control" >
                         @error('name') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
+                        <label for="description" class="form-label">Product Description</label>
                         <textarea name="description" class="form-control" ></textarea>
                         @error('description') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
@@ -38,6 +38,13 @@
                         <input type="number" name="quantity" class="form-control" >
                         @error('quantity') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Product Image</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                        @error('image') 
+                            <span class="text-danger">{{ $message }}</span> 
+                        @enderror
+                    </div>                    
                     <a href="{{route('product.index')}}" class="btn btn-secondary">Back</a>
                     <button type="submit" class="btn btn-primary float-end">Add Product</button>
                 </form>
