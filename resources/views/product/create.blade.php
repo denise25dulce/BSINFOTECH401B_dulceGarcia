@@ -8,16 +8,40 @@
     <title>Add Product</title>
 </head>
 <body>
+    <style>
+        body {
+            background-color: #EAD8C0;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #6096B4;
+            color: #fff;
+        }
+        .btn-custom:hover {
+            background-color: #8096B4;
+        }
+    </style>
     <div class="container mt-5">
     
 
         <div class="card mb-4">
             <div class="text-center card-header">
-                <h5>Add Product</h5>
+                <h4>Add Product</h4>
             </div>
             <div class="card-body">
                 <form action="{{route('product.store')}}" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="_token" value="{{csrf_token()}}">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Product Image</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                        @error('image') 
+                            <span class="text-danger">{{ $message }}</span> 
+                        @enderror
+                    </div> 
                     <div class="mb-3">
                         <label for="name" class="form-label">Product Name</label>
                         <input type="text" name="name" class="form-control" >
@@ -30,21 +54,14 @@
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Price</label>
-                        <input type="number" name="price" class="form-control" >
+                        <input type="number" name="price" class="form-control" step="0.01" min="0.01">
                         @error('price') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Quantity</label>
                         <input type="number" name="quantity" class="form-control" >
                         @error('quantity') <span class="text-danger">{{$message}}</span> @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Product Image</label>
-                        <input type="file" name="image" class="form-control" accept="image/*">
-                        @error('image') 
-                            <span class="text-danger">{{ $message }}</span> 
-                        @enderror
-                    </div>                    
+                    </div>                   
                     <a href="{{route('product.index')}}" class="btn btn-secondary">Back</a>
                     <button type="submit" class="btn btn-primary float-end">Add Product</button>
                 </form>

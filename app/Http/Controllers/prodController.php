@@ -10,11 +10,20 @@ class prodController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $product = Products::paginate(10); // Fetch all products
-        return view('product.index', compact('product'));
-    }
+    public function index(Request $request)
+{
+    $query = $request->input('search');
+    $product = Products::when($query, function ($q) use ($query) {
+        $q->where('name', 'LIKE', '%' . $query . '%');
+        
+        
+    })
+    ->orderBy('name', 'asc')
+    ->paginate(12);
+        
+
+    return view('product.index', compact('product'));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -32,30 +41,29 @@ class prodController extends Controller
         $validate = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'price'=> 'required|integer|min:1',
-            'quantity'=> 'required|integer|min:1',
+            'price' => 'required|numeric|min:0.01',
+            'quantity' => 'required|integer|min:1',
             'image' => 'required|mimes:png,jpeg,webp,jpg,gif|max:2048'
         ]);
         
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->storeAs(
-                'products',
+                'products', 
                 time().'.'.$request->file('image')->getClientOriginalExtension(),
                 'public'
-                
             );
         }
-
+    
         Products::create([
             'name' => $validate['name'],
             'description' => $validate['description'],
             'price' => $validate['price'],
-            'quantity'=> $validate['quantity'],
-            'image'=> $imagePath
+            'quantity' => $validate['quantity'],
+            'image' => $imagePath
         ]);
-
-        return redirect()->route('product.index')->with('success','Product Added Successfully!');
+    
+        return redirect()->route('product.index')->with('success', 'Product Added Successfully!');
     }
 
     /**
@@ -84,14 +92,31 @@ class prodController extends Controller
         $validate = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'price'=> 'required|integer|min:1',
-            'quantity'=> 'required|integer|min:1',
-            'image' => 'required|mimes:png,jpeg,webp,jpg,gif|max:2048'
+            'price' => 'required|numeric|min:0.01',
+            'quantity' => 'required|integer|min:1',
+            'image' => 'nullable|mimes:png,jpeg,webp,jpg,gif|max:2048' 
         ]);
-
+        
         $product = Products::findOrFail($id);
-        $product->update($validate);    
-        return redirect()->route('product.index')->with('success','Product Update Successfully!');
+    
+        if ($request->hasFile('image')) {
+            if ($product->image && \Storage::disk('public')->exists($product->image)) {
+                \Storage::disk('public')->delete($product->image);
+            }
+    
+            
+            $imagePath = $request->file('image')->storeAs(
+                'products',
+                time().'.'.$request->file('image')->getClientOriginalExtension(),
+                'public'
+            );
+            $validate['image'] = $imagePath; 
+        } else {
+            $validate['image'] = $product->image;
+        }
+    
+        $product->update($validate);
+        return redirect()->route('product.index')->with('success', 'Product Updated successfully!');
     }
 
     /**
@@ -99,6 +124,14 @@ class prodController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Products::findOrFail($id);
+
+    if ($product->image && \Storage::disk('public')->exists($product->image)) {
+        \Storage::disk('public')->delete($product->image);
+    }
+
+   
+    $product->delete();
+    return redirect()->route('product.index')->with('success', 'Product Deleted successfully!');
     }
 }

@@ -16,6 +16,10 @@ class Products extends Model
         'image'
     ];
 
+    protected $casts = [
+        'price' => 'decimal:2', // Ensure price is treated as a decimal
+    ];
+
     public function getImageUrlAttribute()
 {
     return $this->image ? asset('storage/' . $this->image) : null;
